@@ -8,17 +8,19 @@ url = 'https://www.imdb.com/title/tt0944947/' + 'episodes?season=' + str(season)
 html = requests.get(url).text
 soup = BeautifulSoup (html, 'html.parser')
 
-seasons = []
+t_seasons = []
 for option in soup.find_all('option'):
     temp = option.text.split()
-    seasons.append(temp)
+    t_seasons.append(temp)
 
-c_seasons = [x for x in seasons if x]
+c_seasons = [x for x in t_seasons if x]
 
+seasons = []
 for i in range(0, len(c_seasons)):
-    #k = int(seasons[i][0])
-    #if k <= 1000:
-    print (c_seasons[i][0])
+    k = int(c_seasons[i][0])
+    if k <= 1000:
+        seasons.append(c_seasons[i][0])
+print (seasons)
 
 #for i in range(0,len(season[0]))
 #    print(season[i])
