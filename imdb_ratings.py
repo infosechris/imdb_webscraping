@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-import numpy as np
-import matplotlib
+import pandas as pd
+import numpy as np 
 import matplotlib.pyplot as plt
 import csv
 import sys
@@ -100,3 +100,12 @@ with open("out.csv", "w", newline="") as f:
     #rating.insert(len(rating),'n')
     #tempA = np.array(rating)
     #array = np.append(array, tempA, axis=0)
+
+data = pd.read_csv(r'C:\Temp\Python\out.csv')
+df = pd.DataFrame(data)
+
+plt.imshow(df, cmap="YlGnBu")
+plt.colorbar()
+plt.xticks(range(len(df.columns)),df.columns)
+plt.yticks(range(len(df.index)),df.index)
+plt.show()
