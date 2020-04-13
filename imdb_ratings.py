@@ -9,7 +9,7 @@ import sys
 season = 1
 perEP = 0
 
-url1 = 'https://www.imdb.com/title/tt0903747/'
+url1 = 'https://www.imdb.com/title/tt0386676/'
 url2 = 'episodes?season='
 url3 = str(season)
 url4 = url1 + url2 + url3
@@ -30,7 +30,7 @@ title = ""
 for i in range(0, len(titleyear)):
     title = title + " " + titleyear[i]
 
-print ('Title: ' + title + '\nYears: ' + year)
+#print ('Title: ' + title + '\nYears: ' + year)
 
 t_seasons = []
 for option in soup.find_all('option'):
@@ -48,11 +48,7 @@ for i in range(0, len(c_seasons)):
     else:
         seasons.append(c_seasons[i][0])
 
-print ('Total Seasons:', len(seasons), '\n')
-
-#array = np.array([])
-#f = open(sys.argv[1], 'wt')
-#writer = csv.writer(f)
+#print ('Total Seasons:', len(seasons), '\n')
 
 csvR = []
 epsMax = 0
@@ -73,9 +69,13 @@ for season in range(1, len(seasons)+1):
         if epsMax < counter:
             epsMax = counter   
 
-    csvR.append([season] + rating)
+    csvR.append(rating)
 
-tempE = ['']
+    #print ("Season:", season, 'of', len(seasons))
+    #print ("Episodes:", eps)
+    #print ("Ratings:", rating, "\n")
+
+tempE = []
 i=1
 while i <= epsMax:
     tempE.append(i)
@@ -84,28 +84,23 @@ while i <= epsMax:
 csvE = []
 csvE.append(tempE)
 
-print(csvR)
-print(csvE)
+#print(csvR)
+#print(csvE)
 
 with open("out.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(csvE)
     writer.writerows(csvR)
 
-    #print ("Season:", season, 'of', len(seasons))
-    #print ("Episodes:", eps)
-    #print ("Ratings:", rating, "\n")
-
-
-    #rating.insert(len(rating),'n')
-    #tempA = np.array(rating)
-    #array = np.append(array, tempA, axis=0)
-
 data = pd.read_csv(r'C:\Temp\Python\out.csv')
 df = pd.DataFrame(data)
 
-plt.imshow(df, cmap="YlGnBu")
+plt.imshow(df, cmap="coolwarm")
 plt.colorbar()
+plt.title(title)
+plt.ylabel('Seasons')
+plt.xlabel('Episodes')
 plt.xticks(range(len(df.columns)),df.columns)
-plt.yticks(range(len(df.index)),df.index)
+plt.yticks(range(len(df.index)),df.index+1)
+plt.gca().invert_yaxis()
 plt.show()
