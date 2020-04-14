@@ -1,4 +1,4 @@
-import requests, csv, sys
+import requests, csv
 import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
@@ -23,16 +23,15 @@ while validUrl:
     url2 = 'episodes?season='
     url3 = str(season)
     url4 = url1 + url2 + url3
-    html = requests.get(url4).text
-    soup = BeautifulSoup (html, 'html.parser')
-
-    t1 = soup.find('h3', attrs={'itemprop': 'name'})
 
     try:
+        html = requests.get(url4).text
+        soup = BeautifulSoup (html, 'html.parser')
+        t1 = soup.find('h3', attrs={'itemprop': 'name'})
         titleyear = t1.text.split()
         validUrl = False
-    except AttributeError:
-        print ('Oops, wrong website URL: Not a TV Series on IMDB Website\n')
+    except:
+        print ('Oops, wrong website URL or Not a valid TV Series on IMDB Website\n')
 
 if titleyear[-1] == ')':
     year = titleyear[-2] + titleyear[-1]
@@ -44,17 +43,18 @@ else:
 
 title = ""
 for i in range(0, len(titleyear)):
-    title = title + " " + titleyear[i]
-
-#print ('Title: ' + title + '\nYears: ' + year)
+    if i == 0:
+        title += titleyear[i]
+    else:
+        title += ' ' + titleyear[i]
 
 t_seasons = []
 for option in soup.find_all('option'):
     stemp = option.text.split()
     t_seasons.append(stemp)
-print (t_seasons)
+
 c_seasons = [x for x in t_seasons if x]
-print (c_seasons)
+
 seasons = []
 for i in range(0, len(c_seasons)):
     if c_seasons[i][0].isnumeric():
@@ -118,12 +118,22 @@ plt.title(title + ' ' + year, pad=20, size=16)
 plt.ylabel('Seasons', labelpad=30, rotation=0)
 plt.xlabel('Episodes', labelpad=10)
 
-ax.invert_yaxis()
 #ax.xaxis.tick_top()
+ax.invert_yaxis()
 plt.yticks(rotation=0)
 plt.xticks(rotation=0)
 
 fig = plt.gcf()
 figsize = fig.get_size_inches()
 fig.set_size_inches(figsize * 1.5)
-plt.show()
+
+if epsMax >= 35:
+    fig.set_figwidth(25)
+elif epsMax >= 25:
+    fig.set_figwidth(20)
+elif epsMax >= 15:
+    fig.set_figwidth(15)
+    
+fig.savefig(title + ' ' + year + '.png')
+
+print ('Completed!\n')
