@@ -1,23 +1,39 @@
-import requests
-from bs4 import BeautifulSoup
+import requests, csv, sys
 import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
-import csv
-import sys
+import seaborn as sns
+from bs4 import BeautifulSoup
 
-season = 1
-perEP = 0
+print("IMDB, TV Show Ratings Chart Display\n")
 
-url1 = 'https://www.imdb.com/title/tt0386676/'
-url2 = 'episodes?season='
-url3 = str(season)
-url4 = url1 + url2 + url3
-html = requests.get(url4).text
-soup = BeautifulSoup (html, 'html.parser')
+validUrl = True
+while validUrl:
+    url1 = input("What is the IMDB TV Series URL: ")
+    url1 = url1.split('?', 1)[0]
+    if url1[-1] == '/':
+        pass
+    elif url1[-1] == 'c':
+        url1 = 'https://www.imdb.com/title/tt0306414/'
+    else:
+        url1 += '/'
 
-t1 = soup.find('h3', attrs={'itemprop': 'name'})
-titleyear = t1.text.split()
+    season = 1
+    perEP = 0
+    url2 = 'episodes?season='
+    url3 = str(season)
+    url4 = url1 + url2 + url3
+    html = requests.get(url4).text
+    soup = BeautifulSoup (html, 'html.parser')
+
+    t1 = soup.find('h3', attrs={'itemprop': 'name'})
+
+    try:
+        titleyear = t1.text.split()
+        validUrl = False
+    except AttributeError:
+        print ('Oops, wrong website URL: Not a TV Series on IMDB Website\n')
+
 if titleyear[-1] == ')':
     year = titleyear[-2] + titleyear[-1]
     del titleyear[-1]
@@ -36,9 +52,9 @@ t_seasons = []
 for option in soup.find_all('option'):
     stemp = option.text.split()
     t_seasons.append(stemp)
-
+print (t_seasons)
 c_seasons = [x for x in t_seasons if x]
-
+print (c_seasons)
 seasons = []
 for i in range(0, len(c_seasons)):
     if c_seasons[i][0].isnumeric():
@@ -94,13 +110,20 @@ with open("out.csv", "w", newline="") as f:
 
 data = pd.read_csv(r'C:\Temp\Python\out.csv')
 df = pd.DataFrame(data)
+df.index = np.arange(1,len(df)+1)
 
-plt.imshow(df, cmap="coolwarm")
-plt.colorbar()
-plt.title(title)
-plt.ylabel('Seasons')
-plt.xlabel('Episodes')
-plt.xticks(range(len(df.columns)),df.columns)
-plt.yticks(range(len(df.index)),df.index+1)
-plt.gca().invert_yaxis()
+ax = sns.heatmap(df, linewidths=.5, annot=True, cmap="RdYlGn", square=True)
+
+plt.title(title + ' ' + year, pad=20, size=16)
+plt.ylabel('Seasons', labelpad=30, rotation=0)
+plt.xlabel('Episodes', labelpad=10)
+
+ax.invert_yaxis()
+#ax.xaxis.tick_top()
+plt.yticks(rotation=0)
+plt.xticks(rotation=0)
+
+fig = plt.gcf()
+figsize = fig.get_size_inches()
+fig.set_size_inches(figsize * 1.5)
 plt.show()
