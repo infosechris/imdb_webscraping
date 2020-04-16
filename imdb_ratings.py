@@ -1,5 +1,9 @@
 # April 2020
 # Coded by Chris Min <infosechris@gmail.com>
+# To do:
+# Put all these in a function *TBA*
+
+#To disable warning on matplotlib version
 import warnings
 warnings.filterwarnings("ignore", "(?s).*MATPLOTLIBDATA.*", category=UserWarning)
 
@@ -10,10 +14,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from bs4 import BeautifulSoup
 
+#Whole code in to a while loop to check if user is done with it
 done = False
 while done == False:
     #print("IMDB, TV Show Ratings Chart Display")
 
+    #Check if URL is valid, try and exception
     validUrl = True
     while validUrl:
 
@@ -26,6 +32,7 @@ while done == False:
         # else:
         #     url1 += '/'
 
+        #User input title, search on IMDB, result in page with seasons
         title_search = input("IMDB TV Series Title Search: ")
         title_search = title_search.replace(' ', '+')
         url_search = 'https://www.imdb.com/find?q=' + title_search + '&ref_=nv_sr_sm'
@@ -59,6 +66,7 @@ while done == False:
         except:
             print ('Cannot find this TV Series Title on IMDB.\n')
 
+    #Years on IMDB goes two ways, it's to check and delete last char accordingly
     if titleyear[-1] == ')':
         year = titleyear[-2] + titleyear[-1]
         del titleyear[-1]
@@ -67,6 +75,7 @@ while done == False:
         year = titleyear[-1]
         del titleyear[-1]
 
+    #Extracting Title
     title = ""
     for i in range(0, len(titleyear)):
         if i == 0:
@@ -74,6 +83,7 @@ while done == False:
         else:
             title += ' ' + titleyear[i]
 
+    #To get Seasons and Years
     t_seasons = []
     for option in soup.find_all('option'):
         stemp = option.text.split()
@@ -81,6 +91,7 @@ while done == False:
 
     c_seasons = [x for x in t_seasons if x]
 
+    #Extract only the Seasons
     seasons = []
     for i in range(0, len(c_seasons)):
         if c_seasons[i][0].isnumeric():
@@ -92,6 +103,8 @@ while done == False:
 
     #print ('Total Seasons:', len(seasons), '\n')
     print ("Begin searching through ratings for all seasons and episodes...")
+
+    #Go through each seasons and get ratings per Eps
     csvR = []
     epsMax = 0
     for season in range(1, len(seasons)+1):
@@ -111,12 +124,14 @@ while done == False:
             if epsMax < counter:
                 epsMax = counter   
 
+        #Ratings in to a list
         csvR.append(rating)
 
         #print ("Season:", season, 'of', len(seasons))
         #print ("Episodes:", eps)
         #print ("Ratings:", rating, "\n")
 
+    #Eps in to a list
     tempE = []
     i=1
     while i <= epsMax:
@@ -130,15 +145,18 @@ while done == False:
     #print(csvE)
     print ('Loop Completed! Creating Heatmap...')
 
+    #Create CSV file with Eps and Ratings
     with open("out.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerows(csvE)
         writer.writerows(csvR)
     
+    #Read the CSV file and put it in a dataframe
     data = pd.read_csv('out.csv')
     df = pd.DataFrame(data)
     df.index = np.arange(1,len(df)+1)
 
+    #Rest is to create a heatmap, adjustments to size, label, display
     ax = sns.heatmap(df, linewidths=.5, annot=True, cmap="RdYlGn", square=True, cbar_kws={'label': '\n\nApplication & Heatmap\nby infosechris@gmail.com'})
 
     plt.title(title + ' ' + year, pad=20, size=16)
@@ -176,15 +194,20 @@ while done == False:
     title = title.replace('?','')
     filename = title + ' ' + year + '.png'
 
+    #If the screenshot already exist, remove it
     if os.path.exists(filename):
         os.remove(filename)
 
+    #Save the heatmap as .PNG file
     fig.savefig(filename)
 
     print ('Heatmap Image Saved!\n')
 
+    #Opens the image once it's done
     os.startfile(filename)
 
+    #Asking if user is done with the application
+    #Only way to break/exit the entire while loop initated at the start
     loopo = True
     notaskingagain = 0
     while loopo:
