@@ -146,13 +146,14 @@ while done == False:
     print ('Loop Completed! Creating Heatmap...')
 
     #Create CSV file with Eps and Ratings
-    with open("out.csv", "w", newline="") as f:
+    csv_path = r"C:\Temp\Python\imdb_webscrapper\out.csv"
+    with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerows(csvE)
         writer.writerows(csvR)
     
     #Read the CSV file and put it in a dataframe
-    data = pd.read_csv('out.csv')
+    data = pd.read_csv(csv_path)
     df = pd.DataFrame(data)
     df.index = np.arange(1,len(df)+1)
 
@@ -187,24 +188,25 @@ while done == False:
         fig.set_figheight(20)
     #elif season >= 25:
         #fig.set_figheight(20)
-    #elif season >= 20:
-        #fig.set_figheight(15)
+    elif season >= 20:
+        fig.set_figheight(15)
 
     title = title.replace(':','')
     title = title.replace('?','')
     filename = title + ' ' + year + '.png'
 
     #If the screenshot already exist, remove it
-    if os.path.exists(filename):
-        os.remove(filename)
+    ss_path = r"C:\Temp\Python\imdb_webscrapper\screenshots\\"
+    if os.path.exists(ss_path + filename):
+        os.remove(ss_path + filename)
 
     #Save the heatmap as .PNG file
-    fig.savefig(filename)
+    fig.savefig(ss_path + filename)
 
     print ('Heatmap Image Saved!\n')
 
     #Opens the image once it's done
-    os.startfile(filename)
+    os.startfile(ss_path + filename)
 
     #Asking if user is done with the application
     #Only way to break/exit the entire while loop initated at the start
