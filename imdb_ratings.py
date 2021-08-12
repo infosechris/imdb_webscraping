@@ -1,9 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: UTF-8 -*-
+
 # April 2020
 # Coded by Chris Min <infosechris@gmail.com>
-# To do:
-# Put all these in a function *TBA*
 
-#To disable warning on matplotlib version
 import warnings
 warnings.filterwarnings("ignore", "(?s).*MATPLOTLIBDATA.*", category=UserWarning)
 
